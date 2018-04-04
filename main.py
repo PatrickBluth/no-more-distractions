@@ -11,17 +11,20 @@ def time_elapsed(start_time, timer):
 def main():
     while True:
         try:
-            # Get input time
-            active_time = input('How many minutes would you like to be blocked for? Enter number or "q" to quit: ')
-            if active_time.lower() == 'q':
+            # Get input time in seconds and convert to minutes
+            active_time_secs = input('How many minutes would you like to be blocked for? '
+                                     'Enter number or "q" to quit: ')
+            active_time = float(active_time_secs) * 60
+
+            # quit if q is entered
+            if active_time_secs.lower() == 'q':
                 print('Exiting...')
                 return
 
             # check if valid input
-            if type(int(active_time)) != int:
+            if type(active_time) != float:
                 raise ValueError
             else:
-                active_time = int(active_time)
                 break
 
         except ValueError:
@@ -33,18 +36,20 @@ def main():
 
     # set current time as starting time
     start_time = timer()
-    # Make window fullscreen and block keys used to exit
+
+    # Make window full-screen and block keys used to exit
     keyboard.press_and_release('f11')
     keyboard.block_key('f11')
     keyboard.block_key('windows')
-    keyboard.remap_hotkey('alt+ctrl+del', 'alt')
-    keyboard.remap_hotkey('alt+tab', 'alt')
-    keyboard.remap_hotkey('alt+f4', 'alt')
+    keyboard.remap_hotkey('ctrl+alt+del', 'shift')
+    keyboard.remap_hotkey('alt+tab', 'shift')
+    keyboard.remap_hotkey('alt+f4', 'shift')
 
-    # While timer still active
+    # While timer still active continue blocking
     while time_elapsed(start_time, timer()) < active_time:
         pass
 
+    # un-full-screen
     keyboard.press_and_release('f11')
 
     # Completion alarm
