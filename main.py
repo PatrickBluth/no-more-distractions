@@ -1,6 +1,7 @@
 from timeit import default_timer as timer
 import webbrowser
 import winsound
+import keyboard
 
 
 def time_elapsed(start_time, timer):
@@ -32,10 +33,19 @@ def main():
 
     # set current time as starting time
     start_time = timer()
+    # Make window fullscreen and block keys used to exit
+    keyboard.press_and_release('f11')
+    keyboard.block_key('f11')
+    keyboard.block_key('windows')
+    keyboard.remap_hotkey('alt+ctrl+del', 'alt')
+    keyboard.remap_hotkey('alt+tab', 'alt')
+    keyboard.remap_hotkey('alt+f4', 'alt')
 
     # While timer still active
     while time_elapsed(start_time, timer()) < active_time:
-        f
+        pass
+
+    keyboard.press_and_release('f11')
 
     # Completion alarm
     duration = 2000  # millisecond
