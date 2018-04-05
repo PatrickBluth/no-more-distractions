@@ -72,7 +72,7 @@ def main():
                 while current_time + 3 > timer():
                     mouse.move(1, 1)
 
-    # un-full-screen
+    # un-full-screen and remove key-blocking
     keyboard.press_and_release('f11')
     keyboard.unhook_all()
 
@@ -80,6 +80,8 @@ def main():
     duration = 2000  # millisecond
     freq = 440  # Hz
     winsound.Beep(freq, duration)
+
+    # end screen
     print('Congrats, you made it!')
     input('press enter to end the program')
 
@@ -88,4 +90,5 @@ def main():
 if not admin.isUserAdmin():
         admin.runAsAdmin()
 
+# run
 main()
