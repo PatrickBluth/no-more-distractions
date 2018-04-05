@@ -4,6 +4,7 @@ import mouse
 import os
 import subprocess
 from timeit import default_timer as timer
+import time
 import webbrowser
 import winsound
 
@@ -14,6 +15,30 @@ import admin
 def time_elapsed(start_time, timer):
     return timer - start_time
 
+def detect_task_manager():
+
+    p_tasklist = subprocess.Popen('tasklist.exe /fo csv',
+                                  stdout=subprocess.PIPE,
+                                  universal_newlines=True)
+
+    for p in csv.DictReader(p_tasklist.stdout):
+        if p['Image Name'] == 'Taskmgr.exe':
+            return True
+    return False
+
+def key_hook(arg):
+    if arg:
+        # Make window full-screen and block keys used to exit
+        # Windows stops ctrl+alt+del from being remapped
+        keyboard.press_and_release('f11')
+        keyboard.block_key('f11')
+        keyboard.block_key('windows')
+        keyboard.remap_hotkey('alt+tab', 'shift')
+        keyboard.remap_hotkey('alt+f4', 'shift')
+    else:
+        keyboard.press_and_release('f11')
+        keyboard.unhook_all()
+    return
 
 def main():
     while True:
@@ -41,41 +66,24 @@ def main():
     url = input('Enter full URL of desired website: ')
     webbrowser.open(url)
 
+    key_hook(True)
+
     # start clock once web page has been opened
     start_time = timer()
 
-    # Make window full-screen and block keys used to exit
-    keyboard.press_and_release('f11')
-    keyboard.block_key('f11')
-    keyboard.block_key('windows')
-    keyboard.remap_hotkey('alt+tab', 'shift')
-    keyboard.remap_hotkey('alt+f4', 'shift')
-
     while time_elapsed(start_time, timer()) < active_time:
-
         # close task manager if open
         os.system('taskkill /im Taskmgr.exe')
 
-        # determine if task manager is opened
-        p_tasklist = subprocess.Popen('tasklist.exe /fo csv',
-                                      stdout=subprocess.PIPE,
-                                      universal_newlines=True)
+        if detect_task_manager():
+                 current_time = timer()
+                 while current_time + 3 > timer():
+                     mouse.move(1, 1)
 
-        for p in csv.DictReader(p_tasklist.stdout):
-            # if task manager opened prevent user from using mouse for 3 seconds
-            if p['Image Name'] == 'Taskmgr.exe':
-                current_time = timer()
-                while current_time + 3 > timer():
-                    mouse.move(1, 1)
+    key_hook(False)
 
-    # un-full-screen and remove key-blocking
-    keyboard.press_and_release('f11')
-    keyboard.unhook_all()
-
-    # Completion alarm
-    duration = 2000  # millisecond
-    freq = 440  # Hz
-    winsound.Beep(freq, duration)
+    # completion alarm in hz and milliseconds
+    winsound.Beep(440, 2000)
 
     print('Congrats, you made it!')
     input('press enter to end the program')
