@@ -12,6 +12,31 @@ import winsound
 import admin
 
 
+def user_prompt():
+    while True:
+        try:
+            # time in seconds
+            active_time_secs = input('How many minutes would you like to be blocked for? '
+                                     'Enter number or "q" to quit: ')
+            if active_time_secs.lower() == 'q':
+                print('Exiting...')
+                return
+
+            active_time = float(active_time_secs) * 60
+
+            if type(active_time) != float:
+                raise ValueError
+            else:
+                break
+
+        # loop through prompt until response is a number
+        except ValueError:
+            print('Invalid input. Enter a number of minutes, ie. 30')
+
+    url = input('Enter full URL of desired website: ')
+    return active_time, url
+
+
 def time_elapsed(start_time, timer):
     return timer - start_time
 
@@ -48,32 +73,12 @@ def mouse_lock():
         mouse.move(1, 1)
 
 
-
-
 def main():
-    while True:
-        try:
-            # time in seconds
-            active_time_secs = input('How many minutes would you like to be blocked for? '
-                                     'Enter number or "q" to quit: ')
-            if active_time_secs.lower() == 'q':
-                print('Exiting...')
-                return
 
-            active_time = float(active_time_secs) * 60
-
-            if type(active_time) != float:
-                raise ValueError
-            else:
-                break
-
-        # loop through prompt until response is a number
-        except ValueError:
-            print('Invalid input. Enter a number of minutes, ie. 30')
+    active_time, url = user_prompt()
 
     # opens url using default browser if a complete url is enter, ie. https://www.google.ca, but will open
     # IE if a non complete URL is not complete, ie. google.ca
-    url = input('Enter full URL of desired website: ')
     webbrowser.open(url)
 
     key_hook(True)
@@ -87,7 +92,6 @@ def main():
 
         if detect_task_manager():
             mouse_lock()
-
 
     key_hook(False)
 
