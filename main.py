@@ -1,7 +1,13 @@
+import keyboard
+import os
 from timeit import default_timer as timer
 import webbrowser
 import winsound
-import keyboard
+
+# make sure user is admin
+import admin
+if not admin.isUserAdmin():
+        admin.runAsAdmin()
 
 
 def time_elapsed(start_time, timer):
@@ -37,16 +43,16 @@ def main():
     # set current time as starting time
     start_time = timer()
 
-    # Make window full-screen and block keys used to exit
+    Make window full-screen and block keys used to exit
     keyboard.press_and_release('f11')
     keyboard.block_key('f11')
     keyboard.block_key('windows')
-    keyboard.remap_hotkey('ctrl+alt+del', 'shift')
     keyboard.remap_hotkey('alt+tab', 'shift')
     keyboard.remap_hotkey('alt+f4', 'shift')
 
     # While timer still active continue blocking
     while time_elapsed(start_time, timer()) < active_time:
+        os.system('taskkill /im Taskmgr.exe')
         pass
 
     # un-full-screen
