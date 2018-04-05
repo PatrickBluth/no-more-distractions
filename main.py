@@ -16,10 +16,6 @@ def time_elapsed(start_time, timer):
     return timer - start_time
 
 
-def freeze_mouse(event):
-    return False
-
-
 def main():
     while True:
         try:
