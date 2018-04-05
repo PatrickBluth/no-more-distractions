@@ -89,6 +89,5 @@ def main():
 # make sure user is admin
 if not admin.isUserAdmin():
         admin.runAsAdmin()
-
-# run
-main()
+else:
+    main()
