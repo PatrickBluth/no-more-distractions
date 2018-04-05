@@ -15,6 +15,7 @@ import admin
 def time_elapsed(start_time, timer):
     return timer - start_time
 
+
 def detect_task_manager():
 
     p_tasklist = subprocess.Popen('tasklist.exe /fo csv',
@@ -25,6 +26,7 @@ def detect_task_manager():
         if p['Image Name'] == 'Taskmgr.exe':
             return True
     return False
+
 
 def key_hook(arg):
     if arg:
@@ -38,7 +40,15 @@ def key_hook(arg):
     else:
         keyboard.press_and_release('f11')
         keyboard.unhook_all()
-    return
+
+
+def mouse_lock():
+    current_time = timer()
+    while current_time + 3 > timer():
+        mouse.move(1, 1)
+
+
+
 
 def main():
     while True:
@@ -76,9 +86,8 @@ def main():
         os.system('taskkill /im Taskmgr.exe')
 
         if detect_task_manager():
-                 current_time = timer()
-                 while current_time + 3 > timer():
-                     mouse.move(1, 1)
+            mouse_lock()
+
 
     key_hook(False)
 
