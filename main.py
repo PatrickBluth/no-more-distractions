@@ -4,6 +4,7 @@ import keyboard
 import mouse
 import os
 import subprocess
+from threading import Thread
 from tkinter import *
 from tkinter import ttk
 from timeit import default_timer as timer
@@ -59,6 +60,14 @@ class AppManager(Frame):
                 return True
         return False
 
+    def task_manager_blocker(self):
+        while True:
+            # close task manager if open
+            os.system('taskkill /im Taskmgr.exe')
+
+            if self.detect_task_manager():
+                self.mouse_lock()
+
     @staticmethod
     def key_hook(arg):
         if arg:
@@ -92,12 +101,11 @@ class AppManager(Frame):
         # start clock once web page has been opened
         start_time = timer()
 
-        while self.time_elapsed(start_time, timer()) < active_time:
-            # close task manager if open
-            os.system('taskkill /im Taskmgr.exe')
-
-            if self.detect_task_manager():
-                self.mouse_lock()
+        # Listen on daemon thread and sleep for active time
+        listener_thread = Thread(target=self.task_manager_blocker)
+        listener_thread.daemon = True
+        listener_thread.start()
+        time.sleep(active_time)
 
         self.key_hook(False)
 
@@ -112,6 +120,8 @@ def main():
     root.title("No More Distractions")
     AppManager().pack(fill="both", expand=True)
     root.mainloop()
+    root.destroy()
+
 
 # make sure user is admin
 if not admin.isUserAdmin():
