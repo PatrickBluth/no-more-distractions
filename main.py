@@ -93,7 +93,6 @@ class AppManager(Frame):
         start_time = timer()
 
         while self.time_elapsed(start_time, timer()) < active_time:
-            time.sleep(60)
             # close task manager if open
             os.system('taskkill /im Taskmgr.exe')
 
@@ -106,7 +105,6 @@ class AppManager(Frame):
         winsound.Beep(440, 2000)
 
         print('Congrats, you made it!')
-        input('press enter to end the program')
 
 
 def main():
