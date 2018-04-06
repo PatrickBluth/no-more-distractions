@@ -2,6 +2,7 @@ import csv
 import keyboard
 import mouse
 import os
+import signal
 import subprocess
 from threading import Thread
 from timeit import default_timer as timer
@@ -74,13 +75,12 @@ def mouse_lock():
         mouse.move(1, 1)
 
 
-def task_manager_block(start_time, active_time):
-    while time_elapsed(start_time, timer()) < active_time:
-        # close task manager if open
-        os.system('taskkill /im Taskmgr.exe')
-
+def task_manager_block():
+    while True:
         if detect_task_manager():
+            os.system('taskkill /im Taskmgr.exe')
             mouse_lock()
+
 
 def main():
 
@@ -95,7 +95,7 @@ def main():
     # start clock once web page has been opened
     start_time = timer()
 
-    blocking_thread = Thread(target=task_manager_block(start_time, active_time))
+    blocking_thread = Thread(target=task_manager_block)
     blocking_thread.daemon = True
     blocking_thread.start()
 
