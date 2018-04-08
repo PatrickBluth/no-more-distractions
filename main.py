@@ -1,10 +1,7 @@
-import csv
 import keyboard
 import mouse
 import os
 import pythoncom
-import signal
-import subprocess
 from threading import Thread
 from timeit import default_timer as timer
 import time
@@ -43,27 +40,11 @@ def user_prompt():
     return active_time, url
 
 
-def time_elapsed(start_time, timer):
-    return timer - start_time
-
-
-def detect_task_manager():
-
-    p_tasklist = subprocess.Popen('tasklist.exe /fo csv',
-                                  stdout=subprocess.PIPE,
-                                  universal_newlines=True)
-
-    for p in csv.DictReader(p_tasklist.stdout):
-        if p['Image Name'] == 'Taskmgr.exe':
-            return True
-    return False
-
-
 def key_hook(arg):
     if arg:
         # Make window full-screen and block keys used to exit
         # Windows stops ctrl+alt+del from being remapped
-        # keyboard.press_and_release('f11')
+        keyboard.press_and_release('f11')
         keyboard.block_key('f11')
         keyboard.block_key('windows')
         keyboard.remap_hotkey('alt+tab', 'shift')
@@ -85,40 +66,9 @@ def listener():
     process_watcher = c.Win32_Process.watch_for("creation")
     while True:
         new_process = process_watcher()
-        print(new_process.Caption)
         if new_process.Caption == 'Taskmgr.exe':
-            os.system('taskkill /im Taskmgr.exe')
             mouse_lock()
-
-
-def task_manager_block_fast():
-
-
-    p_tasklist = subprocess.Popen('tasklist.exe /fo csv',
-                                  stdout=subprocess.PIPE,
-                                  universal_newlines=True)
-    while True:
-        time.sleep(0.05)
-
-        wql = 'SELECT * FROM Win32_Process WHERE Name LIKE "%chrome%"'
-
-        # p_temp = subprocess.Popen('tasklist.exe /fo csv',
-        #                           stdout=subprocess.PIPE,
-        #                           universal_newlines=True)
-        #
-        # if p_tasklist != p_temp:
-        #     p_tasklist = p_temp
-        #     for p in csv.DictReader(p_tasklist.stdout):
-        #         if p['Image Name'] == 'Taskmgrr.exe':
-        #             os.system('taskkill /im Taskmgr.exe')
-
-
-def task_manager_block():
-
-    while True:
-        if detect_task_manager():
             os.system('taskkill /im Taskmgr.exe')
-            mouse_lock()
 
 
 def main():
@@ -130,9 +80,6 @@ def main():
     webbrowser.open(url)
 
     key_hook(True)
-
-    # start clock once web page has been opened
-    start_time = timer()
 
     blocking_thread = Thread(target=listener)
     blocking_thread.daemon = True
