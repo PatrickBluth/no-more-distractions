@@ -1,14 +1,9 @@
-import keyboard
-import mouse
-import os
-import pythoncom
 from threading import Thread
-from timeit import default_timer as timer
 import time
 import webbrowser
 import winsound
-import wmi
 
+import utils
 
 
 # package by Preston Landers to check if user is running as admin
@@ -40,37 +35,6 @@ def user_prompt():
     return active_time, url
 
 
-def key_hook(arg):
-    if arg:
-        # Make window full-screen and block keys used to exit
-        # Windows stops ctrl+alt+del from being remapped
-        keyboard.press_and_release('f11')
-        keyboard.block_key('f11')
-        keyboard.block_key('windows')
-        keyboard.remap_hotkey('alt+tab', 'shift')
-        keyboard.remap_hotkey('alt+f4', 'shift')
-    else:
-        keyboard.press_and_release('f11')
-        keyboard.unhook_all()
-
-
-def mouse_lock():
-    current_time = timer()
-    while current_time + 3 > timer():
-        mouse.move(1, 1)
-
-
-def listener():
-    pythoncom.CoInitialize()
-    c = wmi.WMI()
-    process_watcher = c.Win32_Process.watch_for("creation")
-    while True:
-        new_process = process_watcher()
-        if new_process.Caption == 'Taskmgr.exe':
-            mouse_lock()
-            os.system('taskkill /im Taskmgr.exe')
-
-
 def main():
 
     active_time, url = user_prompt()
@@ -79,15 +43,15 @@ def main():
     # IE if a non complete URL is not complete, ie. google.ca
     webbrowser.open(url)
 
-    key_hook(True)
+    utils.key_hook(True)
 
-    blocking_thread = Thread(target=listener)
+    blocking_thread = Thread(target=utils.better_listener)
     blocking_thread.daemon = True
     blocking_thread.start()
 
     time.sleep(active_time)
 
-    key_hook(False)
+    utils.key_hook(False)
 
     # completion alarm in hz and milliseconds
     winsound.Beep(440, 2000)
