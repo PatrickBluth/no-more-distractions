@@ -23,8 +23,7 @@ class PausableThread(threading.Thread):
                 while self.paused:
                     self.pause_cond.wait()
 
-                #thread should do the thing if
-                #not paused
+                #thread should do the thing if not paused
                 while True:
                     mouse.move(1, 1)
                     time.sleep(0.1)

